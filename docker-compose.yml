@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  postgres: # Renamed from mysql
+    image: postgres:15 # Using PostgreSQL version 15, adjust if needed
+    container_name: leave-postgres # Renamed container
+    restart: always
+    environment:
+      POSTGRES_DB: leavemanagement # Database name
+      POSTGRES_USER: leaveuser # Changed username (avoid using root/postgres directly)
+      POSTGRES_PASSWORD: leavepassword # Changed password
+    ports:
+      - "5432:5432" # Default PostgreSQL port
+    volumes:
+      - postgres-data:/var/lib/postgresql/data # Volume for PostgreSQL data
+    networks:
+      - leave-net
+    healthcheck:
+      # Checks if PostgreSQL is ready to accept commands
+      test: ["CMD-SHELL", "pg_isready -U leaveuser -d leavemanagement"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s # Give PostgreSQL some time to start
+
+  backend:
+    build:
+      context: ./backend
+    container_name: leave-backend
+    depends_on:
+      postgres: # Depends on the postgres service now
+        condition: service_healthy # Wait for the healthcheck to pass
+    ports:
+      - "8080:8080"
+    environment:
+      # Updated Datasource URL for PostgreSQL
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/leavemanagement
+      # Updated credentials to match postgres environment variables
+      SPRING_DATASOURCE_USERNAME: leaveuser
+      SPRING_DATASOURCE_PASSWORD: leavepassword
+      # Optional: Ensure Flyway knows about the user/password too if needed, often inferred
+      SPRING_FLYWAY_USER: leaveuser
+      SPRING_FLYWAY_PASSWORD: leavepassword
+    networks:
+      - leave-net
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: leave-frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+    networks:
+      - leave-net
+
+volumes:
+  postgres-data: # Renamed volume
+
+networks:
+  leave-net:

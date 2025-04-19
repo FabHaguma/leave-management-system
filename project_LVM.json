@@ -1,0 +1,152 @@
+{
+  "project": {
+    "name": "Leave Management System",
+    "description": "A system to manage employee leaves with features like leave application, approval workflows, and leave balance management.",
+    "features": [
+      {
+        "name": "Leave Application",
+        "description": "Allows employees to apply for leaves of various types.",
+        "priority": "must-have"
+      },
+      {
+        "name": "Approval Workflow",
+        "description": "Enables managers/admins to approve or reject leave requests.",
+        "priority": "must-have"
+      },
+      {
+        "name": "Employee Dashboard",
+        "description": "Displays leave balance, application history, and pending approvals.",
+        "priority": "must-have"
+      }
+    ],
+    "targetAudience": "Employees, Managers, and Admins of the organization."
+  },
+  "technicalPreferences": {
+    "backend": {
+      "javaVersion": "17",
+      "springModules": ["Spring Boot", "Spring Security", "Spring Data JPA"]
+    },
+    "frontend": {
+      "reactVersion": "18",
+      "uiLibraries": ["Material-UI"]
+    },
+    "database": {
+      "type": "PostgreSQL",
+      "host": "----",
+      "port": "5432:5432",
+      "username": "leaveuser",
+      "password": "leavepassword"
+    },
+    "deployment": {
+      "cloudProvider": "Docker",
+      "hostingOptions": ["Docker Hub"]
+    }
+  },
+  "developmentEnvironment": {
+    "ides": ["IntelliJ IDEA", "VS Code"],
+    "nodeVersion": "18",
+    "npmVersion": "9",
+    "buildTool": "Maven",
+    "operatingSystem": "Windows"
+  },
+  "architecture": {
+    "type": "Monolithic",
+    "patterns": ["RESTful API"],
+    "stateManagementForReact": "Context API"
+  },
+  "codebase": {
+    "repository": {
+      "url": "https://github.com/FabHaguma/leave-management-system",
+      "structure": "Refer to the project_structure in your provided context."
+    },
+    "startingFromScratch": false
+  },
+  "featurePrioritization": [
+    {
+      "feature": "Leave Application",
+      "priority": "high"
+    },
+    {
+      "feature": "Approval Workflow",
+      "priority": "high"
+    },
+    {
+      "feature": "Employee Dashboard",
+      "priority": "high"
+    },
+    {
+      "feature": "Admin Panel",
+      "priority": "medium"
+    },
+    {
+      "feature": "Team Calendar",
+      "priority": "medium"
+    }
+  ],
+  "thirdPartyIntegrations": {
+    "apis": ["Microsoft Graph API for Authentication"],
+    "analytics": ["no"]
+  },
+  "authenticationAndAuthorization": {
+    "authMethod": "Microsoft Authenticator",
+    "userRoles": ["Staff", "Manager", "Admin"]
+  },
+  "testing": {
+    "unitTesting": ["JUnit", "Jest"],
+    "e2eTesting": ["Cypress"]
+  },
+  "ciCdWorkflow": {
+    "tools": ["GitHub Actions"],
+    "strategy": "automated"
+  },
+  "stylingAndDesign": {
+    "designGuide": "----",
+    "mockupsOrWireframes": "----",
+    "stylingMethod": "CSS-in-JS"
+  },
+  "timeframe": {
+    "estimatedCompletionTime": "2025-04-22",
+    "milestones": [
+      {
+        "name": "Backend API Ready",
+        "deadline": "2025-04-19"
+      },
+      {
+        "name": "Frontend Integration",
+        "deadline": "2025-04-21"
+      }
+    ]
+  },
+  "helpNeeded": {
+    "areas": ["Integration between frontend and backend", "Debugging", "Testing"]
+  },
+  "documentation": {
+    "apiEndpoints": true,
+    "codeComments": true,
+    "setupInstructions": true
+  },
+  "collaboration": {
+    "teamSize": "1",
+    "roles": ["Developer"]
+  },
+  "learningGoals": [
+    {
+      "concept": "Microsoft Graph API",
+      "priority": "high"
+    },
+    {
+      "concept": "React Context API",
+      "priority": "medium"
+    }
+  ],
+  "examplesOrReferences": [
+    {
+      "appName": "Microsoft Teams Leave Management",
+      "url": "----"
+    }
+  ],
+  "budgetAndResources": {
+    "useFreeTier": true,
+    "avoidCostlyTools": true
+  }
+}
