@@ -35,12 +35,15 @@ public class LeaveBalanceController {
             throw new RuntimeException("User not found for email: " + email);
         User user = userOpt.get();
         List<LeaveBalance> balances = leaveBalanceService.getUserLeaveBalances(user);
+        // Update the mapping to use new fields and include leave type info
         return balances.stream().map(b -> new LeaveBalanceDto(
                 b.getId(),
                 b.getUser() != null ? b.getUser().getId() : null,
-                b.getYear(),
-                b.getTotalEntitlement(),
-                b.getDaysUsed()
+                b.getLeaveType() != null ? b.getLeaveType().getId() : null, // Use leaveType ID
+                b.getLeaveType() != null ? b.getLeaveType().getName() : null, // Include leaveType Name
+                b.getEntitlement(), // Use new field name
+                b.getUsed(), // Use new field name
+                b.getRemaining() // Include remaining balance
         )).toList();
     }
 
