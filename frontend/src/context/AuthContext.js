@@ -12,9 +12,9 @@ const AuthContext = createContext({
 
 // Dummy user data for demonstration purposes
 const DUMMY_USERS = [
-    { id: '1', level: 1, username: 'staff', email: 'staff@ist.com', password: 'staff-word', role: 'staff', name: 'Fabrice Haguma - s' },
-    { id: '2', level: 2, username: 'manager', email: 'manager@ist.com', password: 'manager-word', role: 'manager', name: 'Fabrice Haguma - m' },
-    { id: '3', level: 3, username: 'admin', email: 'admin@ist.com', password: 'admin-word', role: 'admin', name: 'Fabrice Haguma - a' },
+    { id: '1', level: 1, username: 'staff', email: 'staff@example.com', password: 'staff-word', role: 'staff', name: 'Fabrice Haguma' },
+    { id: '2', level: 2, username: 'manager', email: 'manager@example.com', password: 'manager-word', role: 'manager', name: 'Fabrice Haguma' },
+    { id: '3', level: 3, username: 'admin', email: 'admin@example.com', password: 'admin-word', role: 'admin', name: 'Fabrice Haguma' },
 ];
 
 const AuthProvider = ({ children }) => {
