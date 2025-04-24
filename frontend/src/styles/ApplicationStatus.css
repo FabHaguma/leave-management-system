@@ -1,0 +1,34 @@
+.application-status-content {
+  width: 80%;
+  margin: 20px auto;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.application-status-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.application-status-table th, .application-status-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+.application-status-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.application-status-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.application-status-table tr:hover {
+  background-color: #f1f1f1;
+}

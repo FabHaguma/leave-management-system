@@ -1,75 +1,141 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
-import * as authService from "../services/authService";
+import React, { createContext, useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const AuthContext = createContext();
+// Create the authentication context
+const AuthContext = createContext({
+    user: null,
+    login: async () => { },
+    logout: () => { },
+    isAuthenticated: false,
+    loading: true, // Add a loading state
+});
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // { name, email, role }
-  // Initialize token from localStorage
-  const [token, setToken] = useState(() => localStorage.getItem("token"));
-  // Loading state for initial auth check
-  const [loading, setLoading] = useState(true);
+// Dummy user data for demonstration purposes
+const DUMMY_USERS = [
+    { id: '1', level: 1, username: 'staff', email: 'staff@ist.com', password: 'staff-word', role: 'staff', name: 'Fabrice Haguma - s' },
+    { id: '2', level: 2, username: 'manager', email: 'manager@ist.com', password: 'manager-word', role: 'manager', name: 'Fabrice Haguma - m' },
+    { id: '3', level: 3, username: 'admin', email: 'admin@ist.com', password: 'admin-word', role: 'admin', name: 'Fabrice Haguma - a' },
+];
 
+const AuthProvider = ({ children }) => {
+    const [user, setUser] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [loading, setLoading] = useState(true); // Initialize loading state
+    const navigate = useNavigate();
 
-  const login = async (email, password) => {
-    setLoading(true); // Start loading before API call
-    try {
-      const data = await authService.login(email, password);
-
-      // Check if the necessary data is present in the API response
-      if (data && data.user && data.token) {
-        setUser(data.user); // { name, email, role }
-        setToken(data.token);
-        setLoading(false); // Stop loading on success
-        return true; // Indicate successful login and state update
-      } else {
-        // API response was successful but didn't contain expected data
-        console.error("Login succeeded but response data is missing user or token:", data);
-        logout(); // Clear any potentially partial state
-        setLoading(false);
-        return false; // Indicate failure
-      }
-    } catch (error) {
-      console.error("Login failed:", error);
-      logout(); // Clear state on failure
-      setLoading(false); // Stop loading on error
-      return false;
-    }
-  };
-  
-
-  const logout = () => {
-    authService.logout(); // Call the service function to remove token
-    setUser(null);
-    setToken(null);
-  };
-
-  // Effect to validate token and potentially fetch user profile on initial load
-  useEffect(() => {
-    const validateTokenAndFetchUser = async () => {
-      if (token) {
-        try {
-          // Try to get the user profile using the stored token
-          const profile = await authService.getProfile();
-          setUser(profile); // Set user data from API response
-        } catch (error) {
-          console.error("Token validation/User fetch failed:", error);
-          logout(); // Invalid token or error fetching user, log out
+    // Check for existing session on initial load
+    useEffect(() => {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            try {
+                const parsedUser = JSON.parse(storedUser);
+                setUser(parsedUser);
+                setIsAuthenticated(true);
+            } catch (error) {
+                console.error("Error parsing user from localStorage", error);
+                localStorage.removeItem('user'); // Clear corrupted data
+            }
         }
-      }
-      setLoading(false); // Finished initial auth check
-    };
-    validateTokenAndFetchUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run only once on mount
+        setLoading(false); // Set loading to false after checking
+    }, []);
 
-  return (
-    // Provide loading state as well
-    <AuthContext.Provider value={{ user, token, login, logout, loading }}>
-      {/* Don't render children until initial auth check is done */}
-      {!loading && children}
-    </AuthContext.Provider>
-  );
+    // Login function (simulated with dummy users)
+    const login = useCallback(async (email, password) => {
+        // Simulate an API call (replace with your actual API call)
+        // For example using fetch:
+        // const response = await fetch('/api/users/login', {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //   },
+        //   body: JSON.stringify({ email, password }),
+        // });
+        
+        // if (!response.ok) {
+        //   throw new Error('Login failed'); // Or handle different error codes
+        // }
+        
+        // const data = await response.json();
+        // const user = data.user; // Adjust based on your API response
+
+        // Simulate finding the user in the dummy array:
+        const foundUser = DUMMY_USERS.find(u => u.email === email && u.password === password);
+        // const foundUser =  user;
+
+
+        if (foundUser) {
+            // Simulate a successful login
+            setUser(foundUser);
+            setIsAuthenticated(true);
+            localStorage.setItem('user', JSON.stringify(foundUser)); // Persist user data
+            navigate('/dashboard'); // Redirect on successful login
+            return; // Important: Exit the function after successful login
+        }
+        else {
+             throw new Error('Invalid credentials');
+        }
+
+        // --- REAL DATABASE AUTHENTICATION (Commented Out) ---
+        // try {
+        //   const response = await fetch('/api/users/register', { // Replace '/api/login'
+        //     method: 'POST',
+        //     headers: {
+        //       'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify({ email, password }),
+        //   });
+
+        //   if (!response.ok) {
+        //     // Handle HTTP errors (e.g., 401 Unauthorized, 500 Internal Server Error)
+        //     if (response.status === 401) {
+        //       throw new Error('Invalid credentials');
+        //     } else {
+        //       throw new Error(`Login failed: ${response.status}`);
+        //     }
+        //   }
+
+        //   const data = await response.json();
+
+        //   if (data && data.user) {
+        //     const { user } = data;
+        //     setUser(user);
+        //     setIsAuthenticated(true);
+        //     localStorage.setItem('user', JSON.stringify(user));
+        //     navigate('/dashboard'); // Redirect
+        //   } else {
+        //      throw new Error('Invalid response from server');
+        //   }
+
+        // } catch (error) {
+        //   // Handle login errors (e.g., network issues, server errors, invalid credentials)
+        //   console.error('Login error:', error);
+        //   throw error; // Re-throw to be caught by the component
+        // }
+    }, [navigate]);
+
+    // Logout function
+    const logout = useCallback(() => {
+        setUser(null);
+        setIsAuthenticated(false);
+        localStorage.removeItem('user'); // Clear user data on logout
+        navigate('/login');
+    }, [navigate]);
+
+    const contextValue = {
+        user,
+        login,
+        logout,
+        isAuthenticated,
+        loading,
+    };
+
+    return (
+        <AuthContext.Provider value={contextValue}>
+            {!loading && children} {/* Render children when not loading */}
+        </AuthContext.Provider>
+    );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export { AuthContext, AuthProvider };
+const AuthModule = { AuthContext, AuthProvider };
+export default AuthModule;

@@ -18,6 +18,7 @@ CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
     name VARCHAR(255),
+    hashpassword VARCHAR(255),
     profile_picture VARCHAR(512) -- URL might be long
 );
 
@@ -51,6 +52,7 @@ CREATE TABLE leave_requests (
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
     reason TEXT,
+    comment TEXT,
     status VARCHAR(50), -- e.g., PENDING, APPROVED, REJECTED
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (leave_type_id) REFERENCES leave_types(id) ON DELETE CASCADE -- Cascade if type is deleted? Or RESTRICT? Cascade for now.
@@ -81,7 +83,7 @@ INSERT INTO roles (name) VALUES ('STAFF'), ('MANAGER'), ('ADMIN')
 ON CONFLICT (name) DO NOTHING; -- Avoid errors if run again
 
 -- Seed initial leave types (optional, add more as needed)
-INSERT INTO leave_types (name) VALUES ('Personal Time Off'), ('Sick Leave'), ('Compassionate Leave'), ('Maternity Leave'), ('Vacation Leave')
+INSERT INTO leave_types (name) VALUES ('Annual Leave'), ('Sick Leave'), ('Compassionate Leave'), ('Maternity Leave'), ('Unpaid Leave')
 ON CONFLICT (name) DO NOTHING;
 
 -- Add Indexes for commonly queried columns (optional but good practice)

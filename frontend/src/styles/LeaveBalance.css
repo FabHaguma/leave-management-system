@@ -1,0 +1,36 @@
+/* Content styling */
+.leave-balance-content {
+  width: 80%;
+  margin: 20px auto;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Table styling */
+.leave-balance-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.leave-balance-table th, .leave-balance-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+.leave-balance-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.leave-balance-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.leave-balance-table tr:hover {
+  background-color: #f1f1f1;
+}

@@ -1,0 +1,53 @@
+/* General container styling */
+.LMS-general-page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+/* History container styling */
+.history-container {
+  width: 80%;
+  margin: 20px auto;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Table styling */
+.leave-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.leave-history-table th, .leave-history-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.leave-history-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.leave-history-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.leave-history-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Error message styling */
+.error-message {
+  color: red;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-align: center;
+}

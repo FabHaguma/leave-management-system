@@ -1,0 +1,208 @@
+/* Styles for Dashboard */
+
+  .admin-header {
+    display: none; /* Hide old headers as Navbar handles it */
+  }
+  
+  .admin-header h2 {
+    margin: 0;
+  }
+  
+  /* Keep your grid styles here */
+  .content-grid.admin-grid { /* Target the specific grid in Dashboard */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Your desired grid columns */
+    gap: 50px; /* Increased gap for more space */
+    width: 100%; /* Make grid take full width of its container */
+    max-width: 1200px; /* Optional: constrain max width */
+    /* Remove margin-top if present, padding is handled by .page-container */
+    /* margin-top: 20px; */
+  }
+
+  
+  .admin-card-link {
+    text-decoration: none; /* Remove underline from link */
+    color: inherit; /* Inherit text color */
+    display: block; /* Make link fill the grid area */
+  }
+  
+  .admin-card {
+    width: 100%; /* Let the grid control the width via minmax */
+    /* width: 300px; */ /* Remove fixed width if using auto-fill grid */
+    height: auto;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    text-align: center;
+    transition: transform 0.2s ease-in-out;
+    display: flex; /* Use flex for card content layout */
+    flex-direction: column; /* Stack card content vertically */
+    justify-content: space-between; /* Space out content */
+  }
+  
+  .admin-card:hover {
+    transform: scale(1.05); /* Slight zoom effect on hover */
+  }
+  
+  .admin-card h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: var(--primary-dark, #333);
+  }
+  
+  .admin-card .card-title-bar {
+    /* Optional: Different title bar style for admin */
+    /* background-color: #e9ecef; */
+  }
+  
+  .card-description {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.4;
+  }
+  
+  body {
+    background-color: var(--background-light);
+    color: var(--primary-dark);
+  }
+  
+  button {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: var(--primary-dark);
+  }
+    
+  .page-title {
+    text-align: center;
+    margin-bottom: 25px;
+    color: var(--primary-dark, #333);
+  }
+  
+
+  
+  .card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block; /* Ensure link takes up grid space */
+    height: 100%; /* Make link fill height */
+  }
+  
+  .card {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Ensure card fills link height */
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    overflow: hidden; /* Prevent content spill */
+  }
+  
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+  }
+  
+  .card-title-bar {
+    background-color: #f8f9fa; /* Light gray title background */
+    padding: 12px 18px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .card-title-bar h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .card-preview {
+    margin-top: 10px;
+    padding: 18px;
+    flex-grow: 1; /* Allow preview area to expand */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
+    text-align: center;
+  }
+  
+  .preview-placeholder, .preview-icon {
+    font-size: 3em; /* Larger icon/placeholder */
+    margin-bottom: 10px;
+    color: var(--primary, #007bff);
+  }
+  
+  .card-description {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.4;
+    margin-top: auto; /* Push description towards bottom if needed */
+  }
+  
+  /* Specific styles for EmployeeDashboardPage cards */
+  .dashboard-card .balance-preview ul,
+  .dashboard-card .notification-preview p {
+    font-size: 0.95em;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .balance-list-inline {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping on small cards */
+    justify-content: center;
+    gap: 15px; /* Space between balance items */
+  }
+  
+  .balance-list-inline li {
+    background: none;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    margin: 0;
+  }
+  
+  .balance-list-inline li strong {
+    margin-left: 5px;
+    color: var(--primary-dark, #333);
+  }
+  
+  .notification-preview .error-text {
+    color: #dc3545;
+  }
+  
+/* Remove default styles that might conflict */
+.admin-container hr, .adminPanel-container hr {
+  display: none; /* Hide the old hr */
+}
+  
+  /* Override previous specific card styles if they conflict */
+  .actions-card, .notifications-card, .balance-card, .requests-card {
+      /* Resetting specific styles if they were applied before */
+      background: none;
+       border: none;
+  }
+  
+  .preview-list {
+      /* Resetting specific styles if they were applied before */
+      /* text-align: left; */
+  }
+  
+  .error-text {
+    color: #dc3545; /* Standard error color */
+    font-size: 0.9em;
+  }

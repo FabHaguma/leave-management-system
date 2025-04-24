@@ -1,0 +1,16 @@
+/* Color Palette */
+:root {
+  --primary-dark: #085f63;
+  --primary: #49beb7;
+  --background-light: #facf5a;
+  --accent: #ff5959;
+}
+
+
+/* Light Theme */
+/* :root {
+  --primary-dark: #005689;
+  --primary: #007cb9;
+  --background-light: #d5eeff;
+  --accent: #ff895d;
+} */

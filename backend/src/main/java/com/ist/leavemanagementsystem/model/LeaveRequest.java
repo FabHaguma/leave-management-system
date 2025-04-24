@@ -33,6 +33,9 @@ public class LeaveRequest {
     @Column(columnDefinition = "TEXT") // Map to TEXT type
     private String reason;
 
+    @Column(columnDefinition = "TEXT") // Map to TEXT type
+    private String comment;
+
     @Column(length = 50) // Map to VARCHAR(50)
     private String status; // e.g., "PENDING", "APPROVED", "REJECTED"
 

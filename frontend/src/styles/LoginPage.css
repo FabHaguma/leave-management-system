@@ -1,0 +1,151 @@
+/* Styles copied from src/draft/login.css */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9; /* Consider using CSS variables if defined elsewhere */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Use min-height for flexibility */
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+  }
+  
+  /* Apply flex centering to the parent of .loginContainer if needed,
+     or adjust body styles if LoginPage is the main page content */
+  
+  .loginContainer {
+    width: 35rem;
+    max-width: 100%; /* Add max-width for smaller screens */
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+  }
+  
+  #form-title { /* Use ID selector from component */
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333; /* Added color for better visibility */
+  }
+  
+  #auth-form { /* Use ID selector from component */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Target divs containing labels and inputs if needed for spacing */
+  #auth-form > div {
+    margin-bottom: 15px;
+  }
+  
+  label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    display: block; /* Ensure label takes its own line */
+    color: #555; /* Added color */
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  select { /* Added select styling */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box; /* Ensure padding doesn't add to width */
+    margin-top: 5px; /* Add some space below label */
+  }
+  
+  select {
+   appearance: none; /* Optional: for custom dropdown arrow styling */
+   background-color: white; /* Ensure select background is white */
+  }
+  
+  
+  button {
+    padding: 10px 15px; /* Adjusted padding */
+    background-color: #0078d4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    font-size: 1rem; /* Ensure consistent font size */
+    display: flex; /* Align icon and text */
+    align-items: center; /* Align icon and text */
+    justify-content: center; /* Align icon and text */
+    width: 100%; /* Make buttons full width */
+    box-sizing: border-box;
+  }
+  
+  button:hover {
+    background-color: #005a9e;
+  }
+  
+  button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+
+  #submit-btn {
+    background-color: #0078d4; /* Specific color for submit */
+  }
+  
+  
+  .oauth-btn {
+    background-color: #2b579a; /* Specific color for OAuth */
+    /* margin-bottom: 15px; */ /* Already has margin-bottom from general button style */
+  }
+  
+  .oauth-btn:hover {
+    background-color: #1e3c72; /* Darker shade for hover */
+  }
+  
+  /* Ensure icon aligns well */
+  .oauth-btn svg {
+    margin-right: 8px;
+  }
+  
+  
+  #role-field {
+    margin-bottom: 15px; /* Add gap between role and register button */
+  }
+  
+  .toggle {
+    text-align: center;
+    margin-top: 15px; /* Increased margin */
+  }
+  
+  .toggle p {
+    margin: 0; /* Remove default paragraph margin */
+    color: #555; /* Set text color */
+  }
+  
+  #toggle-btn { /* Use ID selector */
+    background: none;
+    border: none;
+    color: #0078d4;
+    cursor: pointer;
+    padding: 0 5px; /* Add slight padding */
+    font-size: 1em; /* Match surrounding text size */
+    font-weight: bold; /* Make it stand out */
+    margin: 0; /* Reset margin */
+    vertical-align: baseline; /* Align with text */
+    width: auto; /* Override full width */
+    display: inline; /* Display inline with text */
+  }
+  
+  #toggle-btn:hover {
+    text-decoration: underline;
+    background: none; /* Ensure no background on hover */
+  }
+  
+  #toggle-btn:disabled {
+    color: #999;
+    cursor: not-allowed;
+    text-decoration: none;
+    background: none;
+  }

@@ -1,0 +1,67 @@
+.notification-center {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.notification-center .content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.notification-center h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.generate-report-button {
+  display: block;
+  margin: 10px auto;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.generate-report-button:hover {
+  background-color: #0056b3;
+}
+
+.notification-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.notification-table th, .notification-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.notification-table th {
+  background-color: #f4f4f4;
+}
+
+.notification-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.notification-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.notification-table button {
+  margin-right: 5px;
+  padding: 5px 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.notification-table button:hover {
+  background-color: #218838;
+}
