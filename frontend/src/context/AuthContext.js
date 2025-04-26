@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 // Create the authentication context
 const AuthContext = createContext({
     user: null,
+    register: async () => { },
     login: async () => { },
     logout: () => { },
     isAuthenticated: false,
@@ -12,10 +13,23 @@ const AuthContext = createContext({
 
 // Dummy user data for demonstration purposes
 const DUMMY_USERS = [
-    { id: '1', level: 1, username: 'staff', email: 'staff@example.com', password: 'staff-word', role: 'staff', name: 'Fabrice Haguma' },
-    { id: '2', level: 2, username: 'manager', email: 'manager@example.com', password: 'manager-word', role: 'manager', name: 'Fabrice Haguma' },
-    { id: '3', level: 3, username: 'admin', email: 'admin@example.com', password: 'admin-word', role: 'admin', name: 'Fabrice Haguma' },
+    { id: '1', level: 1, username: 'staff', email: 'staff@example.com', password: 'staff-word', role: 'STAFF', name: 'Fab staff' },
+    { id: '2', level: 2, username: 'manager', email: 'manager@example.com', password: 'manager-word', role: 'MANAGER', name: 'Fab Manager' },
+    { id: '3', level: 3, username: 'admin', email: 'admin@example.com', password: 'admin-word', role: 'ADMIN', name: 'Fab Admin' },
 ];
+
+const setUserAccessLevel = (user) => {
+    // Set user access level based on role
+    if (user.role === 'STAFF') {
+        user.level = 1;
+    } else if (user.role === 'MANAGER') {
+        user.level = 2;
+    } else if (user.role === 'ADMIN') {
+        user.level = 3;
+    } else {
+        user.level = 0; // Default level for unknown roles
+    }
+}
 
 const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
@@ -43,75 +57,80 @@ const AuthProvider = ({ children }) => {
     const login = useCallback(async (email, password) => {
         // Simulate an API call (replace with your actual API call)
         // For example using fetch:
-        // const response = await fetch('/api/users/login', {
-        //   method: 'POST',
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //   },
-        //   body: JSON.stringify({ email, password }),
-        // });
+        const response = await fetch('http://localhost:8080/api/users/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        });
         
-        // if (!response.ok) {
-        //   throw new Error('Login failed'); // Or handle different error codes
-        // }
+        if (!response.ok) {
+          throw new Error('Login failed'); // Or handle different error codes
+        }
         
-        // const data = await response.json();
-        // const user = data.user; // Adjust based on your API response
+        const userData = await response.json();
+        // console.log('Login - Response: ' + JSON.stringify(userData)); // Debugging line
+        // Simulate a successful login
 
         // Simulate finding the user in the dummy array:
-        const foundUser = DUMMY_USERS.find(u => u.email === email && u.password === password);
+        // const foundUser = DUMMY_USERS.find(u => u.email === email && u.password === password);
         // const foundUser =  user;
 
 
-        if (foundUser) {
+        if (userData) {
+            console.log('Login - User found:'+ JSON.stringify(userData)); // Debugging line
             // Simulate a successful login
-            setUser(foundUser);
+            setLoading(false); // Set loading to false after checking
+            setUserAccessLevel(userData); // Set user access level based on role
+            setUser(userData);
             setIsAuthenticated(true);
-            localStorage.setItem('user', JSON.stringify(foundUser)); // Persist user data
+            localStorage.setItem('user', JSON.stringify(userData)); // Persist user data
             navigate('/dashboard'); // Redirect on successful login
             return; // Important: Exit the function after successful login
         }
         else {
-             throw new Error('Invalid credentials');
+            console.log('Login - User Not Found'); // Debugging line
+            throw new Error('Invalid credentials-FE');
         }
 
-        // --- REAL DATABASE AUTHENTICATION (Commented Out) ---
-        // try {
-        //   const response = await fetch('/api/users/register', { // Replace '/api/login'
-        //     method: 'POST',
-        //     headers: {
-        //       'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify({ email, password }),
-        //   });
-
-        //   if (!response.ok) {
-        //     // Handle HTTP errors (e.g., 401 Unauthorized, 500 Internal Server Error)
-        //     if (response.status === 401) {
-        //       throw new Error('Invalid credentials');
-        //     } else {
-        //       throw new Error(`Login failed: ${response.status}`);
-        //     }
-        //   }
-
-        //   const data = await response.json();
-
-        //   if (data && data.user) {
-        //     const { user } = data;
-        //     setUser(user);
-        //     setIsAuthenticated(true);
-        //     localStorage.setItem('user', JSON.stringify(user));
-        //     navigate('/dashboard'); // Redirect
-        //   } else {
-        //      throw new Error('Invalid response from server');
-        //   }
-
-        // } catch (error) {
-        //   // Handle login errors (e.g., network issues, server errors, invalid credentials)
-        //   console.error('Login error:', error);
-        //   throw error; // Re-throw to be caught by the component
-        // }
     }, [navigate]);
+
+    const register = useCallback(async (name, email, password, profilePicture) => {
+
+        profilePicture = profilePicture || '../assets/default-avatar.png'; // Default profile picture if not provided
+        // Simulate an API call for registration
+        const response = await fetch('http://localhost:8080/api/users/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name,
+                email,
+                password,
+                profilePicture
+            }),
+        });
+
+        let userData = null;
+        if (!response.ok) {
+            console.log('Registration - User Not Found'); // Debugging line
+            // data = DUMMY_USERS[2];
+            throw new Error('Registration failed'); // Handle different error codes
+        }
+        else{
+            userData = await response.json();
+            console.log('Registration - User Found: ' + JSON.stringify(userData)); // Debugging line
+        }
+        
+        setLoading(false); // Set loading to false after checking
+        setUserAccessLevel(userData); // Set user access level based on role
+        setUser(userData);
+        setIsAuthenticated(true);
+        localStorage.setItem('user', JSON.stringify(userData)); // Persist user data
+        navigate('/dashboard'); // Redirect on successful registration
+    }, [navigate]); 
 
     // Logout function
     const logout = useCallback(() => {
@@ -123,6 +142,7 @@ const AuthProvider = ({ children }) => {
 
     const contextValue = {
         user,
+        register,
         login,
         logout,
         isAuthenticated,

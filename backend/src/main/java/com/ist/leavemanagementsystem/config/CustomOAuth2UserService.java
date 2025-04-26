@@ -12,15 +12,11 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
-
 @Service("customOAuth2UserService")
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private RoleRepository roleRepository;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest request) throws OAuth2AuthenticationException {
@@ -36,7 +32,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     User newUser = new User();
                     newUser.setEmail(email);
                     newUser.setName(user.getAttribute("name"));
-                    newUser.setRoles(Set.of(roleRepository.findByName("STAFF")));
+                    newUser.setRole("STAFF");
                     return userRepository.save(newUser);
                 });
 

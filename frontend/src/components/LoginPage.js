@@ -8,10 +8,9 @@ function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [role, setRole] = useState('employee');
     const [isRegistering, setIsRegistering] = useState(false);
     const [error, setError] = useState(''); // To display errors
-    const { login, loading } = useContext(AuthContext); // Use the context
+    const { login, register, loading } = useContext(AuthContext); // Use the context
 
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent the default form submission
@@ -28,23 +27,7 @@ function LoginPage() {
             }
             try {
                 // Replace this with your actual registration API call
-                // const response = await fetch('/api/users/register', {
-                //     method: 'POST',
-                //     headers: {
-                //         'Content-Type': 'application/json',
-                //     },
-                //     body: JSON.stringify({
-                //         username,
-                //         email,
-                //         password,
-                //         role,
-                //     }),
-                // });
-    
-                // if (!response.ok) {
-                //     const errorData = await response.json();
-                //     throw new Error(errorData.message || 'Registration failed');
-                // }
+                await register(username, email, password, '../assets/default-avatar.png'); // Call the registration function from the context
     
                 // alert('Registration successful! You can now log in.');
                 // toggleMode(); // Switch to login mode after successful registration
@@ -66,7 +49,8 @@ function LoginPage() {
     };
 
     if (loading) {
-        return <div>Loading...</div>; // Show a loading indicator during login
+        console.log('Was going to show: Loading...'); // Debugging line
+        // return <div>Loading...</div>; // Show a loading indicator during login
     }
 
     const toggleMode = () => {
@@ -77,7 +61,6 @@ function LoginPage() {
         setPassword('');
         setUsername('');
         setConfirmPassword('');
-        setRole('employee');
     };
 
     const handleOAuthLogin = () => {
@@ -141,19 +124,6 @@ function LoginPage() {
                                 required
                                 disabled={loading}
                             />
-                        </div>
-                        <div id="role-field"> {/* Added role field */}
-                            <label htmlFor="role">Role:</label>
-                            <select
-                                id="role"
-                                value={role}
-                                onChange={(e) => setRole(e.target.value)}
-                                disabled={loading}
-                            >
-                                <option value="employee">Employee</option>
-                                <option value="manager">Manager</option>
-                                <option value="admin">Admin</option>
-                            </select>
                         </div>
                     </>
                 )}

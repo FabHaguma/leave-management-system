@@ -18,15 +18,16 @@ CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
     name VARCHAR(255),
-    hashpassword VARCHAR(255),
+    password VARCHAR(255),
     profile_picture VARCHAR(512) -- URL might be long
 );
 
 -- Create User Roles Join Table (Many-to-Many)
 CREATE TABLE user_roles (
+    id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,
     role_id BIGINT NOT NULL,
-    PRIMARY KEY (user_id, role_id),
+    role_name VARCHAR(255) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
 );

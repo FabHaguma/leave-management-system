@@ -3,7 +3,6 @@ package com.ist.leavemanagementsystem.repository;
 import com.ist.leavemanagementsystem.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
@@ -16,6 +15,4 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
     @Query("SELECT r FROM Role r")
     List<Role> findAll();
 
-    @Query("SELECT r.name FROM Role r JOIN r.users u WHERE u.id = :userId")
-    List<String> findRoleNamesByUserId(@Param("userId") Long userId);
 }

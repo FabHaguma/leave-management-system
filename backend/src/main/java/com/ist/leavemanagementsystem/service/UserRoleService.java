@@ -29,26 +29,32 @@ public class UserRoleService {
         Role role = roleRepository.findById(roleId).orElseThrow(() -> new RuntimeException("Role not found"));
 
         UserRole userRole = new UserRole();
-        userRole.setUser(user);
-        userRole.setRole(role);
+        userRole.setUserId(user.getId());
+        userRole.setRoleId(role.getId());
+        userRole.setRoleName(role.getName());
 
         userRoleRepository.save(userRole);
     }
 
-    public List<String> getRolesByUserId(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        return userRoleRepository.findRolesByUserId(user.getId())
-                .stream()
-                .map(Role::getName) // Assuming Role has a getName() method
-                .toList();
+    public void assignRoleToUser(String userEmail, String roleName) {
+        Role role = roleRepository.findByName(roleName);
+        User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new RuntimeException("User not found"));
+
+        UserRole userRole = new UserRole();
+        userRole.setUserId(user.getId());
+        userRole.setRoleId(role.getId());
+        userRole.setRoleName(role.getName());
+
+        userRoleRepository.save(userRole);
     }
 
-    public void removeRoleFromUser(Long userId, Long roleId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        Role role = roleRepository.findById(roleId).orElseThrow(() -> new RuntimeException("Role not found"));
-
-        UserRole userRole = userRoleRepository.findByUserAndRole(user, role);
-
-        userRoleRepository.delete(userRole);
+    public String getRoleByUserId(Long userId) {
+        List<UserRole> userRoleList = userRoleRepository.findAll();
+        for (UserRole ur : userRoleList) {
+            if (ur.getUserId() == userId) {
+                return ur.getRoleName();
+            }
+        }
+        return "";
     }
 }

@@ -1,19 +1,13 @@
 package com.ist.leavemanagementsystem.service;
 
 import com.ist.leavemanagementsystem.dto.UserDto;
-import com.ist.leavemanagementsystem.service.UserRoleService;
 import com.ist.leavemanagementsystem.repository.UserRepository;
-import com.ist.leavemanagementsystem.repository.UserRoleRepository;
-import com.ist.leavemanagementsystem.model.Role;
 import com.ist.leavemanagementsystem.model.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import com.ist.leavemanagementsystem.model.UserRole;
-import com.ist.leavemanagementsystem.repository.RoleRepository;
 
 @Service
 public class UserService {
@@ -24,55 +18,32 @@ public class UserService {
     @Autowired
     private UserRoleService userRoleService;
 
-    @Autowired
-    private UserRoleRepository userRoleRepository;
-
-    @Autowired
-    private RoleRepository roleRepository;
-
-    public UserDto getUserDtoFromOAuth(OAuth2User principal) {
-        if (principal == null)
-            return null;
-
-        String id = principal.getAttribute("sub");
-        if (id == null)
-            id = principal.getName();
-
-        String name = principal.getAttribute("name");
-        String email = principal.getAttribute("email");
-        String avatarUrl = principal.getAttribute("picture");
-        if (avatarUrl == null)
-            avatarUrl = principal.getAttribute("avatar_url");
-
-        // Fetch user from database
+    public UserDto authenticateUser(String email, String rawPassword) {
+        // Fetch user from the database
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        // Fetch the single role of the user
-        String role = userRoleService.getRolesByUserId(user.getId()).get(0);
-        if (role == null) {
-            throw new UsernameNotFoundException("Role not found for user: " + user.getId());
+        // Check if the user is a test user, we don't need to verify the password
+        if (!user.getEmail().contains("test")) {
+            // Verify the password
+            if (!BCrypt.checkpw(rawPassword, user.getPassword())) {
+                throw new UsernameNotFoundException("Invalid credentials-BE");
+            }
         }
 
-        return new UserDto(id, name, email, avatarUrl, role, user.getHashPassword());
-    }
-
-    public UserDto getUserDtoFromDatabase(String email) {
-        // Fetch user from database
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
         // Fetch the single role of the user
-        List<UserRole> userRoles = userRoleRepository.findAll();
-
-        String role = userRoleService.getRolesByUserId(user.getId()).get(0);
-        if (role == null) {
-            throw new UsernameNotFoundException("Role not found for user: " + user.getId());
+        String role = userRoleService.getRoleByUserId(user.getId());
+        if (role == null || role.isEmpty()) {
+            throw new UsernameNotFoundException("Role not found for user: " + user.getEmail());
         }
-        String avatarUrl = user.getProfilePicture();
 
-        return new UserDto(String.valueOf(user.getId()), user.getName(), user.getEmail(), avatarUrl, role,
-                user.getHashPassword());
+        System.out.println(
+                "UserService - authenticateUser - user: " + user.getEmail() + ", rawPassword: " + rawPassword
+                        + ", role: "
+                        + role + ", password: " + user.getPassword());
+
+        // Return the authenticated user's details
+        return new UserDto(user.getName(), user.getEmail(), user.getProfilePicture(), role);
     }
 
     public UserDto registerUser(User request) {
@@ -81,34 +52,38 @@ public class UserService {
             throw new UsernameNotFoundException("User already exists with email: " + request.getEmail());
         }
 
-        // Save the new user to the database
-        User savedUser = userRepository.save(request);
+        // Hash the password before saving
+        String hashedPassword = BCrypt.hashpw(request.getPassword(), BCrypt.gensalt());
+        request.setPassword(hashedPassword);
 
-        // Fetch the single role of the user
-        String role = userRoleService.getRolesByUserId(savedUser.getId()).get(0);
-        if (role == null) {
-            throw new UsernameNotFoundException("Role not found for user: " + savedUser.getId());
+        System.out.println(
+                "UserService - registerUser - user: " + request.getEmail() + ", password: " + request.getPassword());
+
+        String role = null;
+
+        // Assign "STAFF" to @staff.com emails and "MANAGER" to @manager.com" and
+        // "ADMIN" to @admin.com emails
+        if (request.getEmail().endsWith("@staff.com")) {
+            role = "STAFF";
+            request.setRole(role); // Set the role for the user
+        } else if (request.getEmail().endsWith("@manager.com")) {
+            role = "MANAGER";
+            request.setRole(role); // Set the role for the user
+        } else if (request.getEmail().endsWith("@admin.com")) {
+            role = "ADMIN";
+            request.setRole(role); // Set the role for the user
+        } else if (!request.getEmail().endsWith("@ist.com")) {
+            throw new UsernameNotFoundException("Invalid email domain: " + request.getEmail());
         }
 
-        return new UserDto(String.valueOf(savedUser.getId()), savedUser.getName(), savedUser.getEmail(),
-                savedUser.getProfilePicture(), role, savedUser.getHashPassword());
-    }
+        // Save the new user to the database // save user first to get the ID while
+        // assigning the role
+        userRepository.save(request);
 
-    private String getRoleByUserId(Long userId) {
-        List<UserRole> userRoles = userRoleRepository.findAll();
-        Long roleId = null;
-        for (UserRole userRole : userRoles) {
-            if (userRole.getUserId().equals(userId)) {
-                // roleId = userRole.getRoleId();
-                break;
-            }
-        }
-        if (roleId == null) {
-            throw new UsernameNotFoundException("Role not found for user: " + userId);
-        }
-        Role role = roleRepository.findById(roleId)
-                .orElseThrow(() -> new UsernameNotFoundException("Role not found for ID: " + roleId));
-        return role.getName();
+        // Assign the role to the user in the user_role table
+        userRoleService.assignRoleToUser(request.getEmail(), role);
+
+        return new UserDto(request.getName(), request.getEmail(), request.getProfilePicture(), role);
     }
 
 }
