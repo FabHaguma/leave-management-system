@@ -5,10 +5,10 @@ INSERT INTO users (email, name, password, profile_picture) VALUES
 ('test@admin.com', 'Admin User', 'hashed_password_3', 'https://example.com/admin.jpg');
 
 -- Seed data for User Roles Table
-INSERT INTO user_roles (user_id, role_id, role_name) VALUES
-((SELECT id FROM users WHERE email = 'john.test@staff.com'), 1, 'STAFF'), -- John Doe as STAFF
-((SELECT id FROM users WHERE email = 'jane.test@manager.com'), 2, 'MANAGER'), -- Jane Smith as MANAGER
-((SELECT id FROM users WHERE email = 'test@admin.com'), 3, 'ADMIN'); -- Admin User as ADMIN
+INSERT INTO user_roles (user_id, role_id) VALUES
+((SELECT id FROM users WHERE email = 'john.test@staff.com'), (SELECT id FROM roles WHERE name = 'STAFF')), -- John Doe as STAFF
+((SELECT id FROM users WHERE email = 'jane.test@manager.com'), (SELECT id FROM roles WHERE name = 'MANAGER')), -- Jane Smith as MANAGER
+((SELECT id FROM users WHERE email = 'test@admin.com'), (SELECT id FROM roles WHERE name = 'ADMIN')); -- Admin User as ADMIN
 
 -- Seed data for Leave Balances Table
 INSERT INTO leave_balances (user_id, leave_type_id, entitlement, used, remaining) VALUES

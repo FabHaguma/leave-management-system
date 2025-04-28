@@ -15,8 +15,4 @@ public class Role {
 
     @Column(nullable = false, unique = true, length = 255) // Added length based on schema
     private String name; // "STAFF", "MANAGER", "ADMIN"
-
-    public Role(String name) {
-        this.name = name;
-    }
 }

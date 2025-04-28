@@ -2,11 +2,26 @@ package com.ist.leavemanagementsystem.service.impl;
 
 import com.ist.leavemanagementsystem.model.*;
 import com.ist.leavemanagementsystem.service.NotificationService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.ist.leavemanagementsystem.repository.RoleRepository;
+import com.ist.leavemanagementsystem.repository.UserRepository;
+import com.ist.leavemanagementsystem.repository.NotificationRepository;
+import com.ist.leavemanagementsystem.util.MapperUtil;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
     // Inject NotificationRepository, EmailService, etc.
+
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     @Override
     public void notifyLeaveSubmitted(User user, LeaveRequest leaveRequest) {
@@ -15,17 +30,41 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void notifyLeaveApproved(User user, LeaveRequest leaveRequest) {
-        // Notify user of approval
+        Notification notification = new Notification();
+        notification.setRecipientId(user.getId());
+        notification.setMessage("Your leave request from " + leaveRequest.getStartDate() + " to " +
+                leaveRequest.getEndDate() + " has been approved.");
+        notification.setType("APPROVED");
+
+        notificationRepository.save(notification);
     }
 
     @Override
     public void notifyLeaveRejected(User user, LeaveRequest leaveRequest) {
-        // Notify user of rejection
+        Notification notification = new Notification();
+        notification.setRecipientId(user.getId());
+        notification.setMessage("Your leave request from " + leaveRequest.getStartDate() + " to " +
+                leaveRequest.getEndDate() + " has been rejected.");
+        notification.setType("REJECTED");
+
+        notificationRepository.save(notification);
     }
 
     @Override
-    public void notifyPendingApproval(User approver, LeaveRequest leaveRequest) {
-        // Notify manager/admin to approve/reject
+    public void notifyPendingApproval(LeaveRequest leaveRequest) {
+        Role approverRole = roleRepository.findByName("ADMIN");
+        User approverUser = userRepository.findById(approverRole.getId()).orElse(null);
+        User user = userRepository.findById(leaveRequest.getUserId()).orElse(null);
+
+        if (approverUser != null) {
+            Notification notification = new Notification();
+            notification.setRecipientId(approverUser.getId());
+            notification.setMessage("Leave request pending approval for " + user.getName() + " from " +
+                    leaveRequest.getStartDate() + " to " + leaveRequest.getEndDate());
+            notification.setType("LEAVE_SUBMITTED");
+
+            notificationRepository.save(notification);
+        }
     }
 
     @Override

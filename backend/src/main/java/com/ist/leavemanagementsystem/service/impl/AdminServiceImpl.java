@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional; // For transactional operations
+import com.ist.leavemanagementsystem.util.MapperUtil;
 
 import java.util.List;
 
@@ -31,6 +32,9 @@ public class AdminServiceImpl implements AdminService {
 
     @Autowired
     private LeaveTypeRepository leaveTypeRepository;
+
+    @Autowired
+    private MapperUtil mapperUtil; // Assuming this is a utility for mapping DTOs to entities and vice versa
 
     @Override
     @Transactional // Ensure atomicity
@@ -71,7 +75,7 @@ public class AdminServiceImpl implements AdminService {
         log.info("Successfully created leave type with ID {}", savedLeaveType.getId());
 
         // Convert saved entity back to DTO
-        return new LeaveTypeDto(savedLeaveType.getId(), savedLeaveType.getName(), savedLeaveType.getDefaultDays());
+        return mapperUtil.mapToLeaveTypeDto(savedLeaveType);
     }
 
     @Override
@@ -88,8 +92,7 @@ public class AdminServiceImpl implements AdminService {
         LeaveType updatedLeaveType = leaveTypeRepository.save(leaveType);
         log.info("Successfully updated leave type with ID {}", id);
 
-        return new LeaveTypeDto(updatedLeaveType.getId(), updatedLeaveType.getName(),
-                updatedLeaveType.getDefaultDays());
+        return mapperUtil.mapToLeaveTypeDto(updatedLeaveType);
     }
 
     @Override

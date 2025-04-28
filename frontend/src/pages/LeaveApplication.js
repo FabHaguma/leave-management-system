@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from './Navbar'; // Import Navbar
+import Navbar from '../components/Navbar'; // Import Navbar
 import '../styles/LeaveApplication.css';
 import { AuthContext } from '../context/AuthContext'; // Import AuthContext
+const { sendRequest } = require('../utils/urlBuilder');
 
 const LeaveApplication = () => {
   const { user } = React.useContext(AuthContext); // Get user info from AuthContext
@@ -13,6 +14,18 @@ const LeaveApplication = () => {
   const [leaveType, setLeaveType] = useState('');
   const [reason, setReason] = useState('');
   const [formError, setFormError] = useState('');
+  const [leaveTypes, setLeaveTypes] = useState([]); // State to store leave types
+  const [supportingDocuments, setSupportingDocuments] = useState([]);
+
+  // Fetch leave types from the backend
+  useEffect(() => {
+    const fetchLeaveTypes = async () => {
+      const data = await sendRequest('leave-types', 'GET', { });
+      setLeaveTypes(data); // Set leave types in state
+    };
+
+    fetchLeaveTypes();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,23 +40,39 @@ const LeaveApplication = () => {
       return;
     }
 
-    const requestData = {
-      startDate,
-      endDate,
-      type: leaveType,
-      reason,
-      userId: user.id, // Include user ID from AuthContext
-    };
+    const formData = new FormData();
+    formData.append('startDate', startDate);
+    formData.append('endDate', endDate);
+    formData.append('leaveTypeName', leaveType);
+    const selectedLeaveType = leaveTypes.find((type) => type.name === leaveType);
+    formData.append('leaveTypeId', selectedLeaveType.id);
+    formData.append('reason', reason);
+    formData.append('userId', user.id);
 
-    // Simulate API call (replace with actual API call)
-    const success = true; // Replace with actual success response
-    const error = null; // Replace with actual error response if any
+    // Append files to FormData
+    let documentCount = 0;
+    Array.from(supportingDocuments).forEach((file) => {
+      formData.append('supportingDocuments', file);
+      documentCount++;
+    });
+    formData.append('hasDocuments', documentCount > 0);
 
-    if (success) {
-      navigate('/'); // Redirect to dashboard or history page
-    } else {
-      setFormError(error || 'Submission failed. Please try again.');
-    }
+    const response = await sendRequest('leave-requests', 'POST', formData);
+    // try {
+    //   const response = await fetch('http://localhost:8080/api/leave-requests', {
+    //     method: 'POST',
+    //     body: formData,
+    //   });
+  
+    //   if (!response.ok) {
+    //     console.error('Error submitting leave application:', response.statusText);
+    //     throw new Error('Failed to submit leave application');
+    //   }
+  
+      
+    // } catch (error) {
+    //   setFormError(error.message || 'Submission failed. Please try again.');
+    // }
   };
 
   return (
@@ -85,11 +114,11 @@ const LeaveApplication = () => {
               required
             > 
               <option value="">Select Leave Type</option>
-              <option value="annual">Annual Leave</option>
-              <option value="sick">Sick Leave</option>
-              <option value="maternity">Maternity Leave</option>
-              <option value="unpaid">Unpaid Leave</option>
-              <option value="compassionate">Compassionate Leave</option>
+              {leaveTypes.map((type) => (
+                <option key={type.id} value={type.name}>
+                  {type.name}
+                </option>
+              ))}
             </select>
           </div>
           <div className="form-group">
@@ -106,7 +135,7 @@ const LeaveApplication = () => {
             <input
               type="file"
               id="supportingDocuments"
-              onChange={(e) => console.log(e.target.files)} // Handle file upload logic here
+              onChange={(e) => setSupportingDocuments(e.target.files)} // Handle file upload logic here
               multiple
             />
           </div>

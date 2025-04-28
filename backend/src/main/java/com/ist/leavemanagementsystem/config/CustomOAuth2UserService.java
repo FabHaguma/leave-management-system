@@ -13,7 +13,8 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Service;
 
 @Service("customOAuth2UserService")
-public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+public class CustomOAuth2UserService implements
+        OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     @Autowired
     private UserRepository userRepository;
@@ -32,7 +33,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     User newUser = new User();
                     newUser.setEmail(email);
                     newUser.setName(user.getAttribute("name"));
-                    newUser.setRole("STAFF");
+                    // newUser.setRole("STAFF");
                     return userRepository.save(newUser);
                 });
 

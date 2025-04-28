@@ -4,24 +4,24 @@ import com.ist.leavemanagementsystem.model.*;
 import com.ist.leavemanagementsystem.dto.LeaveBalanceDto;
 import com.ist.leavemanagementsystem.repository.LeaveBalanceRepository;
 import com.ist.leavemanagementsystem.repository.LeaveTypeRepository;
-import com.ist.leavemanagementsystem.repository.UserRepository;
 import com.ist.leavemanagementsystem.service.LeaveBalanceService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.ist.leavemanagementsystem.util.MapperUtil;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class LeaveBalanceServiceImpl implements LeaveBalanceService {
+
     @Autowired
     private LeaveBalanceRepository leaveBalanceRepository;
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private LeaveTypeRepository leaveTypeRepository;
+    @Autowired
+    private MapperUtil mapperUtil;
 
     @Override
     public void accrueMonthlyLeave() {
@@ -36,81 +36,78 @@ public class LeaveBalanceServiceImpl implements LeaveBalanceService {
     }
 
     @Override
-    public LeaveBalance getLeaveBalance(User user, LeaveType type) {
-        // TODO: Implement logic to find specific balance by user and type
-        // Example: return leaveBalanceRepository.findByUserAndLeaveType(user,
-        // type).orElse(null);
-        // Need to add findByUserAndLeaveType method to LeaveBalanceRepository
-        return null;
+    public List<LeaveBalance> getUserLeaveBalances(Long userId) {
+        return leaveBalanceRepository.findByUserId(userId);
     }
 
     @Override
-    public List<LeaveBalance> getUserLeaveBalances(User user) {
-        // TODO: Implement logic to find all balances for a user
-        // Example: return leaveBalanceRepository.findByUser(user);
-        // Need to add findByUser method to LeaveBalanceRepository
-        return leaveBalanceRepository.findAll().stream()
-                .filter(lb -> lb.getUser() != null && lb.getUser().getId().equals(user.getId()))
-                .toList();
-    }
+    public boolean hasSufficientBalance(long userId, Long leaveTypeId, int daysRequested) {
+        List<LeaveBalance> balances = leaveBalanceRepository.findByUserId(userId);
+        if (balances.isEmpty()) {
+            return false; // No leave balances found for the user
+        }
+        // add up all days used for the leave type id we have
+        int remainingPlusEntitled = 0;
+        boolean isFirstTimeUser = false;
+        for (LeaveBalance balance : balances) {
+            if (balance.getLeaveTypeId().equals(leaveTypeId)) {
+                remainingPlusEntitled = balance.getRemaining() + balance.getEntitlement();
+                // for the first time user will have zero on all fields
+                if (balance.getRemaining() == 0 && balance.getUsed() == 0) {
+                    // we need to check the default days of the leave type
+                    isFirstTimeUser = true;
+                }
+            }
+        }
 
-    @Override
-    public boolean hasSufficientEntitlement(User user, LeaveType type, double daysRequested) {
-        LeaveBalance balance = getLeaveBalance(user, type);
-        // TODO: Handle case where balance might be null
-        return balance != null && balance.getRemaining() >= daysRequested;
+        if (isFirstTimeUser) {
+            LeaveType leaveType = leaveTypeRepository.findById(leaveTypeId)
+                    .orElseThrow(() -> new EntityNotFoundException("LeaveType not found for id: " + leaveTypeId));
+
+            remainingPlusEntitled += leaveType.getDefaultDays();
+        }
+        // Compare days requested with total days available
+        return remainingPlusEntitled >= daysRequested;
     }
 
     @Override
     @Transactional
-    public void updateLeaveBalanceOnRequest(User user, LeaveType type, double days) {
-        LeaveBalance balance = getLeaveBalance(user, type);
+    public void adjustLeaveBalance(Long userId, Long leaveTypeId, int days) {
+        LeaveType leaveType = leaveTypeRepository.findById(leaveTypeId)
+                .orElseThrow(() -> new EntityNotFoundException("LeaveType not found for id: " + leaveTypeId));
+        LeaveBalance balance = leaveBalanceRepository.findByUserIdAndLeaveTypeId(userId, leaveTypeId)
+                .orElse(null);
+
         if (balance != null) {
             balance.setUsed(balance.getUsed() + days);
-            balance.setRemaining(balance.getEntitlement() - balance.getUsed());
+            balance.setRemaining(leaveType.getDefaultDays() - balance.getUsed());
             leaveBalanceRepository.save(balance);
         } else {
             throw new RuntimeException(
-                    "Leave balance not found for user " + user.getId() + " and leave type " + type.getId());
+                    "Leave balance not found for user " + userId + " and leave type " + leaveTypeId);
         }
     }
 
     @Override
     @Transactional
-    public void adjustLeaveBalance(User user, LeaveType type, double days) {
-        LeaveBalance balance = getLeaveBalance(user, type);
-        if (balance != null) {
-            balance.setEntitlement(balance.getEntitlement() + days);
-            balance.setRemaining(balance.getEntitlement() - balance.getUsed());
+    public void updateUserLeaveBalances(List<LeaveBalanceDto> leaveBalances) {
+        for (LeaveBalanceDto dto : leaveBalances) {
+            LeaveBalance balance = leaveBalanceRepository
+                    .findByUserIdAndLeaveTypeId(dto.getUserId(), dto.getLeaveTypeId())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "Leave balance not found for user " + dto.getUserId() + " and leave type "
+                                    + dto.getLeaveTypeId()));
+
+            balance.setUsed(dto.getUsed());
+            balance.setEntitlement(dto.getEntitlement());
+            balance.setRemaining(dto.getRemaining());
             leaveBalanceRepository.save(balance);
-        } else {
-            throw new RuntimeException(
-                    "Leave balance not found for user " + user.getId() + " and leave type " + type.getId());
         }
     }
 
     @Override
-    @Transactional
-    public void updateUserLeaveBalances(Long userId, List<LeaveBalanceDto> balances) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found for id: " + userId));
-
-        for (LeaveBalanceDto dto : balances) {
-            LeaveBalance leaveBalance = Optional.ofNullable(dto.getId())
-                    .flatMap(leaveBalanceRepository::findById)
-                    .orElse(new LeaveBalance());
-
-            LeaveType leaveType = leaveTypeRepository.findById(dto.getLeaveTypeId())
-                    .orElseThrow(
-                            () -> new EntityNotFoundException("LeaveType not found for id: " + dto.getLeaveTypeId()));
-
-            leaveBalance.setUser(user);
-            leaveBalance.setLeaveType(leaveType);
-            leaveBalance.setEntitlement(dto.getEntitlement());
-            leaveBalance.setUsed(dto.getUsed());
-            leaveBalance.setRemaining(dto.getRemaining());
-
-            leaveBalanceRepository.save(leaveBalance);
-        }
+    public List<LeaveBalanceDto> getAllLeaveBalances() {
+        List<LeaveBalance> balances = leaveBalanceRepository.findAll();
+        return balances.stream().map(leaveBalance -> mapperUtil.mapToLeaveBalanceDto(leaveBalance)).toList();
     }
 }

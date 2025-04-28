@@ -6,6 +6,7 @@ import com.ist.leavemanagementsystem.dto.PolicyDto;
 import com.ist.leavemanagementsystem.service.AdminService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -14,11 +15,8 @@ import java.util.List;
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 
-    private final AdminService adminService;
-
-    public AdminController(AdminService adminService) {
-        this.adminService = adminService;
-    }
+    @Autowired
+    private AdminService adminService;
 
     // Adjust leave balances for a user
     @PutMapping("/users/{userId}/leave-balances")

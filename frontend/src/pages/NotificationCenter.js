@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from './Navbar';
+import Navbar from '../components/Navbar';
 import '../styles/NotificationCenter.css';
+const { sendRequest } = require('../utils/urlBuilder');
 
 const NotificationCenter = () => {
   const [notifications, setNotifications] = useState([]);
@@ -9,6 +10,7 @@ const NotificationCenter = () => {
   useEffect(() => {
     // Fetch notifications and user role
     const fetchNotifications = async () => {
+      
       try {
         const response = await fetch('/api/notifications');
         const data = await response.json();

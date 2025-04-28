@@ -1,4 +1,29 @@
-/* Styles for CalendarManager Component */
+
+/* Calendar content layout */
+.calendar-content {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  flex-wrap: wrap; /* Allow wrapping */
+  width: 100%; /* Ensure it uses the full width */
+}
+
+.public-holidays {
+  width: 30%;
+  max-width: 500px; /* Limit the width of the holidays section */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.calendar-component {
+  /* border: 5px solid #420099; */
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  /* overflow: hidden;   */ /* Prevent overflow */
+  max-width: 100%; /* Ensure it doesn't exceed the parent's width */
+  box-sizing: border-box; /* Include padding and border in total width */
+}
 
 .calendar-manager-container {
   display: flex;
@@ -16,30 +41,9 @@
   padding: 20px;
 }
 
-/* Calendar content layout */
-.calendar-content {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  max-width: 1200px;
-}
 
-.calendar-view {
-  flex: 2;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-}
 
-.public-holidays {
-  flex: 1;
-  padding: 20px;
-  margin-left: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-}
+
 
 .public-holidays h3 {
   margin-bottom: 10px;

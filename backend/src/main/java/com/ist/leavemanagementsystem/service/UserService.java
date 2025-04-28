@@ -3,20 +3,26 @@ package com.ist.leavemanagementsystem.service;
 import com.ist.leavemanagementsystem.dto.UserDto;
 import com.ist.leavemanagementsystem.repository.UserRepository;
 import com.ist.leavemanagementsystem.model.User;
+import com.ist.leavemanagementsystem.util.MapperUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
+import com.ist.leavemanagementsystem.service.LookupService;
+import java.util.List;
 
 @Service
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private UserRoleService userRoleService;
+    @Autowired
+    private LookupService lookupService;
+    @Autowired
+    private MapperUtil mapperUtil;
 
     public UserDto authenticateUser(String email, String rawPassword) {
         // Fetch user from the database
@@ -25,25 +31,19 @@ public class UserService {
 
         // Check if the user is a test user, we don't need to verify the password
         if (!user.getEmail().contains("test")) {
-            // Verify the password
-            if (!BCrypt.checkpw(rawPassword, user.getPassword())) {
-                throw new UsernameNotFoundException("Invalid credentials-BE");
+            // Verify the password to allow seeded users to login without password
+            if (!user.getPassword().contains("password")) {
+                // If the password is not "password", check the raw password against the
+                // hashed password
+                if (!BCrypt.checkpw(rawPassword, user.getPassword())) {
+                    throw new UsernameNotFoundException("Invalid credentials-BE");
+                }
             }
-        }
 
-        // Fetch the single role of the user
-        String role = userRoleService.getRoleByUserId(user.getId());
-        if (role == null || role.isEmpty()) {
-            throw new UsernameNotFoundException("Role not found for user: " + user.getEmail());
         }
-
-        System.out.println(
-                "UserService - authenticateUser - user: " + user.getEmail() + ", rawPassword: " + rawPassword
-                        + ", role: "
-                        + role + ", password: " + user.getPassword());
 
         // Return the authenticated user's details
-        return new UserDto(user.getName(), user.getEmail(), user.getProfilePicture(), role);
+        return mapperUtil.mapToUserDto(user);
     }
 
     public UserDto registerUser(User request) {
@@ -65,25 +65,36 @@ public class UserService {
         // "ADMIN" to @admin.com emails
         if (request.getEmail().endsWith("@staff.com")) {
             role = "STAFF";
-            request.setRole(role); // Set the role for the user
         } else if (request.getEmail().endsWith("@manager.com")) {
             role = "MANAGER";
-            request.setRole(role); // Set the role for the user
         } else if (request.getEmail().endsWith("@admin.com")) {
             role = "ADMIN";
-            request.setRole(role); // Set the role for the user
         } else if (!request.getEmail().endsWith("@ist.com")) {
             throw new UsernameNotFoundException("Invalid email domain: " + request.getEmail());
         }
 
         // Save the new user to the database // save user first to get the ID while
         // assigning the role
-        userRepository.save(request);
+        User user = userRepository.save(request);
+        lookupService.addUserRoleToLookup(user.getId(), role);
 
         // Assign the role to the user in the user_role table
         userRoleService.assignRoleToUser(request.getEmail(), role);
 
-        return new UserDto(request.getName(), request.getEmail(), request.getProfilePicture(), role);
+        return mapperUtil.mapToUserDto(user);
     }
 
+    public UserDto getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with ID: " + id));
+        return mapperUtil.mapToUserDto(user);
+    }
+
+    public List<UserDto> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        List<UserDto> userDtos = users.stream()
+                .map(user -> mapperUtil.mapToUserDto(user))
+                .toList();
+        return userDtos;
+    }
 }

@@ -1,9 +1,7 @@
 package com.ist.leavemanagementsystem.service;
 
-import com.ist.leavemanagementsystem.model.LeaveBalance;
-import com.ist.leavemanagementsystem.model.LeaveType;
-import com.ist.leavemanagementsystem.model.User;
 import com.ist.leavemanagementsystem.dto.LeaveBalanceDto;
+import com.ist.leavemanagementsystem.model.LeaveBalance;
 import java.util.List;
 
 public interface LeaveBalanceService {
@@ -11,15 +9,14 @@ public interface LeaveBalanceService {
 
     void processCarryForward();
 
-    LeaveBalance getLeaveBalance(User user, LeaveType type);
+    List<LeaveBalance> getUserLeaveBalances(Long userId);
 
-    List<LeaveBalance> getUserLeaveBalances(User user);
+    List<LeaveBalanceDto> getAllLeaveBalances();
 
-    boolean hasSufficientEntitlement(User user, LeaveType type, double daysRequested);
+    boolean hasSufficientBalance(long userId, Long leaveTypeId, int daysRequested);
 
-    void updateLeaveBalanceOnRequest(User user, LeaveType type, double days);
+    void adjustLeaveBalance(Long userId, Long leaveTypeId, int days);
 
-    void adjustLeaveBalance(User user, LeaveType type, double days);
+    void updateUserLeaveBalances(List<LeaveBalanceDto> leaveBalances);
 
-    void updateUserLeaveBalances(Long userId, List<LeaveBalanceDto> balances);
 }

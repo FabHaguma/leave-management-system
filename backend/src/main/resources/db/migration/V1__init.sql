@@ -27,7 +27,6 @@ CREATE TABLE user_roles (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,
     role_id BIGINT NOT NULL,
-    role_name VARCHAR(255) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
 );
@@ -37,9 +36,9 @@ CREATE TABLE leave_balances (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,
     leave_type_id BIGINT NOT NULL,
-    entitlement DOUBLE PRECISION DEFAULT 0.0,
-    used DOUBLE PRECISION DEFAULT 0.0,
-    remaining DOUBLE PRECISION DEFAULT 0.0,
+    entitlement SMALLINT DEFAULT 0,
+    used SMALLINT DEFAULT 0,
+    remaining SMALLINT DEFAULT 0,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (leave_type_id) REFERENCES leave_types(id) ON DELETE CASCADE,
     UNIQUE (user_id, leave_type_id) -- Ensure one balance entry per user per leave type
@@ -54,7 +53,10 @@ CREATE TABLE leave_requests (
     end_date DATE NOT NULL,
     reason TEXT,
     comment TEXT,
+    has_documents BOOLEAN DEFAULT FALSE,
     status VARCHAR(50), -- e.g., PENDING, APPROVED, REJECTED
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (leave_type_id) REFERENCES leave_types(id) ON DELETE CASCADE -- Cascade if type is deleted? Or RESTRICT? Cascade for now.
 );
@@ -84,7 +86,7 @@ INSERT INTO roles (name) VALUES ('STAFF'), ('MANAGER'), ('ADMIN')
 ON CONFLICT (name) DO NOTHING; -- Avoid errors if run again
 
 -- Seed initial leave types (optional, add more as needed)
-INSERT INTO leave_types (name) VALUES ('Annual Leave'), ('Sick Leave'), ('Compassionate Leave'), ('Maternity Leave'), ('Unpaid Leave')
+INSERT INTO leave_types (name, default_days) VALUES ('Annual Leave', 20), ('Sick Leave', 20), ('Compassionate Leave', 15), ('Maternity Leave', 90), ('Unpaid Leave', 15)
 ON CONFLICT (name) DO NOTHING;
 
 -- Add Indexes for commonly queried columns (optional but good practice)

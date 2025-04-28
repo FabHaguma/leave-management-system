@@ -2,6 +2,9 @@ package com.ist.leavemanagementsystem.controller;
 
 import com.ist.leavemanagementsystem.dto.LeaveTypeDto;
 import com.ist.leavemanagementsystem.service.LeaveTypeService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,15 +13,20 @@ import java.util.List;
 @RequestMapping("/api/leave-types")
 public class LeaveTypeController {
 
-    private final LeaveTypeService leaveTypeService;
-
-    public LeaveTypeController(LeaveTypeService leaveTypeService) {
-        this.leaveTypeService = leaveTypeService;
-    }
+    @Autowired
+    private LeaveTypeService leaveTypeService;
 
     // List all leave types
     @GetMapping
-    public List<LeaveTypeDto> getAllLeaveTypes() {
-        return leaveTypeService.getAllLeaveTypes();
+    public ResponseEntity<List<LeaveTypeDto>> getAllLeaveTypes() {
+        List<LeaveTypeDto> leaveTypes = leaveTypeService.getAllLeaveTypes();
+        return ResponseEntity.ok(leaveTypes);
+    }
+
+    // Insert a new leave type
+    @PostMapping
+    public ResponseEntity<LeaveTypeDto> createLeaveType(@RequestBody LeaveTypeDto leaveTypeDto) {
+        LeaveTypeDto createdLeaveType = leaveTypeService.createLeaveType(leaveTypeDto);
+        return ResponseEntity.status(201).body(createdLeaveType); // Return 201 Created
     }
 }

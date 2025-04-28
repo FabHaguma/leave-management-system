@@ -9,9 +9,6 @@ import com.ist.leavemanagementsystem.repository.UserRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Set;
-
 @Service
 public class UserRoleService {
 
@@ -25,13 +22,10 @@ public class UserRoleService {
     private UserRoleRepository userRoleRepository;
 
     public void assignRoleToUser(Long userId, Long roleId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        Role role = roleRepository.findById(roleId).orElseThrow(() -> new RuntimeException("Role not found"));
 
         UserRole userRole = new UserRole();
-        userRole.setUserId(user.getId());
-        userRole.setRoleId(role.getId());
-        userRole.setRoleName(role.getName());
+        userRole.setUserId(userId);
+        userRole.setRoleId(roleId);
 
         userRoleRepository.save(userRole);
     }
@@ -43,18 +37,18 @@ public class UserRoleService {
         UserRole userRole = new UserRole();
         userRole.setUserId(user.getId());
         userRole.setRoleId(role.getId());
-        userRole.setRoleName(role.getName());
+        // userRole.setRoleName(role.getName());
 
         userRoleRepository.save(userRole);
     }
 
-    public String getRoleByUserId(Long userId) {
-        List<UserRole> userRoleList = userRoleRepository.findAll();
-        for (UserRole ur : userRoleList) {
-            if (ur.getUserId() == userId) {
-                return ur.getRoleName();
-            }
-        }
-        return "";
-    }
+    // public String getRoleByUserId(Long userId) {
+    // List<UserRole> userRoleList = userRoleRepository.findAll();
+    // for (UserRole ur : userRoleList) {
+    // if (ur.getUserId() == userId) {
+    // return ur.getRoleName();
+    // }
+    // }
+    // return "";
+    // }
 }

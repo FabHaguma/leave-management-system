@@ -17,9 +17,8 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recipient_id", nullable = false)
-    private User recipient; // Renamed from recipient_id for clarity
+    @Column(name = "recipient_id", nullable = false)
+    private Long recipientId;
 
     @Column(columnDefinition = "TEXT")
     private String message;

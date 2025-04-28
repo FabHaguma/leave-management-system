@@ -12,7 +12,8 @@ public class LeaveBalanceDto {
     private Long userId;
     private Long leaveTypeId; // Added leaveTypeId
     private String leaveTypeName; // Added leaveTypeName for display
-    private double entitlement; // Renamed from totalEntitlement
-    private double used; // Renamed from daysUsed
-    private double remaining; // Added remaining balance
+    private int entitlement; // Renamed from totalEntitlement
+    private int used; // Renamed from daysUsed
+    private int remaining; // Added remaining balance
+    private String userName;
 }

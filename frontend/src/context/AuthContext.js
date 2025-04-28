@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+const { sendRequest } = require('../utils/urlBuilder');
 
 // Create the authentication context
 const AuthContext = createContext({
@@ -13,9 +14,9 @@ const AuthContext = createContext({
 
 // Dummy user data for demonstration purposes
 const DUMMY_USERS = [
-    { id: '1', level: 1, username: 'staff', email: 'staff@example.com', password: 'staff-word', role: 'STAFF', name: 'Fab staff' },
-    { id: '2', level: 2, username: 'manager', email: 'manager@example.com', password: 'manager-word', role: 'MANAGER', name: 'Fab Manager' },
-    { id: '3', level: 3, username: 'admin', email: 'admin@example.com', password: 'admin-word', role: 'ADMIN', name: 'Fab Admin' },
+    { id: 1, name: 'Fab staff', email: 'staff@example.com', role: 'STAFF', avatar: '../assets/default-avatar.png' },
+    { id: 2, name: 'Fab Manager', email: 'manager@example.com', role: 'MANAGER', avatar: '../assets/default-avatar.png' },
+    { id: 3, name: 'Fab Admin', email: 'admin@example.com', role: 'ADMIN', avatar: '../assets/default-avatar.png' },
 ];
 
 const setUserAccessLevel = (user) => {
@@ -57,29 +58,24 @@ const AuthProvider = ({ children }) => {
     const login = useCallback(async (email, password) => {
         // Simulate an API call (replace with your actual API call)
         // For example using fetch:
-        const response = await fetch('http://localhost:8080/api/users/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email, password }),
-        });
+
+        const response = await sendRequest('users/login', 'POST', { email, password });
+
+        // let response = null;
+        // if(email.includes('staff')) response = JSON.stringify(DUMMY_USERS[0]);
+        // else if(email.includes('manager')) response = JSON.stringify(DUMMY_USERS[1]);
+        // else if(email.includes('admin')) response = JSON.stringify(DUMMY_USERS[2]);
         
-        if (!response.ok) {
-          throw new Error('Login failed'); // Or handle different error codes
-        }
         
-        const userData = await response.json();
         // console.log('Login - Response: ' + JSON.stringify(userData)); // Debugging line
         // Simulate a successful login
 
-        // Simulate finding the user in the dummy array:
-        // const foundUser = DUMMY_USERS.find(u => u.email === email && u.password === password);
-        // const foundUser =  user;
-
-
+        // const userData = JSON.parse(response); 
+        const userData = response;
+        console.log(`[AuthContext - login] userData: ${JSON.stringify(userData)}`); // Debugging line
+        
         if (userData) {
-            console.log('Login - User found:'+ JSON.stringify(userData)); // Debugging line
+            // console.log('Login - User found:'+ JSON.stringify(userData)); // Debugging line
             // Simulate a successful login
             setLoading(false); // Set loading to false after checking
             setUserAccessLevel(userData); // Set user access level based on role
@@ -100,30 +96,11 @@ const AuthProvider = ({ children }) => {
 
         profilePicture = profilePicture || '../assets/default-avatar.png'; // Default profile picture if not provided
         // Simulate an API call for registration
-        const response = await fetch('http://localhost:8080/api/users/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                name,
-                email,
-                password,
-                profilePicture
-            }),
-        });
+        const response = await sendRequest('users/register', 'POST', { name, email, password, profilePicture });
+        const userData = response; // await response.json();
+        console.log(`[AuthContext - register] userData: ${JSON.stringify(userData)}`); // Debugging line
+        // console.log('Registration - User Found: ' + JSON.stringify(userData));
 
-        let userData = null;
-        if (!response.ok) {
-            console.log('Registration - User Not Found'); // Debugging line
-            // data = DUMMY_USERS[2];
-            throw new Error('Registration failed'); // Handle different error codes
-        }
-        else{
-            userData = await response.json();
-            console.log('Registration - User Found: ' + JSON.stringify(userData)); // Debugging line
-        }
-        
         setLoading(false); // Set loading to false after checking
         setUserAccessLevel(userData); // Set user access level based on role
         setUser(userData);

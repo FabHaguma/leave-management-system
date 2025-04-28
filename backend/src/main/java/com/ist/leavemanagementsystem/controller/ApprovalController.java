@@ -3,26 +3,23 @@ package com.ist.leavemanagementsystem.controller;
 import com.ist.leavemanagementsystem.dto.LeaveApprovalDto;
 import com.ist.leavemanagementsystem.service.ApprovalService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @RestController
 @RequestMapping("/api/approvals")
 public class ApprovalController {
-
-    private final ApprovalService approvalService;
-
-    public ApprovalController(ApprovalService approvalService) {
-        this.approvalService = approvalService;
-    }
+    @Autowired
+    private ApprovalService approvalService;
 
     // Approve a leave request
-    @PostMapping("/{leaveRequestId}/approve")
-    public void approveLeave(@PathVariable Long leaveRequestId, @RequestBody LeaveApprovalDto approvalDto) {
-        approvalService.approveLeaveRequest(leaveRequestId, approvalDto);
+    @PostMapping("/approve")
+    public void approveLeave(@RequestBody LeaveApprovalDto approvalDto) {
+        approvalService.approveLeaveRequest(approvalDto.getLeaveRequestId(), approvalDto);
     }
 
     // Reject a leave request, with comment
-    @PostMapping("/{leaveRequestId}/reject")
-    public void rejectLeave(@PathVariable Long leaveRequestId, @RequestBody LeaveApprovalDto approvalDto) {
-        approvalService.rejectLeaveRequest(leaveRequestId, approvalDto);
+    @PostMapping("/reject")
+    public void rejectLeave(@RequestBody LeaveApprovalDto approvalDto) {
+        approvalService.rejectLeaveRequest(approvalDto.getLeaveRequestId(), approvalDto);
     }
 }

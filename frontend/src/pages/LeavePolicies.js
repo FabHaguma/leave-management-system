@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import Navbar from './Navbar';
+import Navbar from '../components/Navbar';
 import '../styles/LeavePolicies.css';
+const { sendRequest } = require('../utils/urlBuilder');
 
 const LeavePolicies = () => {
   const [leaveTypes, setLeaveTypes] = useState([]);

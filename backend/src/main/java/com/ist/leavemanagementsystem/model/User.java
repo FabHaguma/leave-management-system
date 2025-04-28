@@ -1,9 +1,11 @@
 package com.ist.leavemanagementsystem.model;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import jakarta.persistence.*;
 import lombok.*;
+import com.ist.leavemanagementsystem.service.LookupService;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,6 +17,10 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class User {
+
+    @Transient
+    @Autowired
+    private LookupService lookupService;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,13 +35,13 @@ public class User {
     @Column(nullable = false, length = 255) // Added password field from schema
     private String password;
 
-    @Transient
-    private String role;
+    // @Transient
+    // private String role;
 
     @Column(length = 512) // Added profile_picture field from schema
     private String profilePicture;
 
     public List<GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(this.getRole()));
+        return Collections.singletonList(new SimpleGrantedAuthority(lookupService.getRoleNameByUserId(this.id)));
     }
 }

@@ -1,0 +1,50 @@
+/* Moved styles from HolidaysComp.js */
+
+.public-holidays {
+  flex: 1;
+  padding: 20px;
+  margin-left: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.public-holidays h3 {
+  margin-bottom: 10px;
+}
+
+.public-holidays ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.public-holidays li {
+  margin: 5px 0;
+  font-size: 16px;
+}
+
+.add-holiday-form {
+  margin-top: 20px;
+}
+
+.add-holiday-form input {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.add-holiday-form button {
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.add-holiday-form button:hover {
+  background-color: #0056b3;
+}

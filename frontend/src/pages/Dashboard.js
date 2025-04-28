@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Navbar from './Navbar'; // Import Navbar
+import Navbar from '../components/Navbar'; // Import Navbar
 import '../styles/Dashboard.css';
 import { AuthContext } from '../context/AuthContext'; // Import AuthContext
 

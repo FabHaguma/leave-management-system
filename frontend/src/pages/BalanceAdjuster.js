@@ -1,12 +1,28 @@
-import React, { useState } from 'react';
-import Navbar from './Navbar';
+import React, { useState, useEffect } from 'react';
+import Navbar from '../components/Navbar';
 import '../styles/BalanceAdjuster.css';
+import { AuthContext } from '../context/AuthContext'; 
+const { sendRequest } = require('../utils/urlBuilder');
 
 const BalanceAdjuster = () => {
+  const { user } = React.useContext(AuthContext);
+
   const [userId, setUserId] = useState('');
   const [days, setDays] = useState(0);
   const [message, setMessage] = useState('');
+  const [leaveBalances, setLeaveBalances] = useState([]); // State to hold leave balances
   const [loading, setLoading] = useState(false); // New loading state
+
+
+  useEffect(() => {
+        const fetchLeaveBalances = async () => {
+          const response = await sendRequest('/leave-balances/me', 'POST', {userId: user.id});
+          const data = response // await response.json();
+          setLeaveBalances(data);
+        };
+    
+        fetchLeaveBalances();
+    }, []);
 
   const handleAdjust = async (e) => {
     e.preventDefault();
@@ -19,24 +35,8 @@ const BalanceAdjuster = () => {
       return;
     }
 
-    try {
-      // Simulate API call (replace with actual API endpoint)
-      const response = await fetch(`/api/admin/users/${userId}/leave-balances`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ days }),
-      });
-
-      if (response.ok) {
-        setMessage('Leave balance updated successfully.');
-      } else {
-        setMessage('Failed to update leave balance.');
-      }
-    } catch (error) {
-      setMessage('An error occurred. Please try again.');
-    } finally {
-      setLoading(false); // Reset loading
-    }
+    const response = await sendRequest('/leave-balances/admin-update', 'POST', {});
+    
   };
 
   return (

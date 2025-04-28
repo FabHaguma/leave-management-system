@@ -20,7 +20,7 @@ public class UserRole {
     @Column(name = "role_id", nullable = false)
     private Long roleId;
 
-    @Column(name = "role_name", nullable = false)
-    private String roleName;
+    // @Column(name = "role_name", nullable = false)
+    // private String roleName;
 
 }

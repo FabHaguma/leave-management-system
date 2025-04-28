@@ -10,7 +10,7 @@ public interface NotificationService {
 
     void notifyLeaveRejected(User user, LeaveRequest leaveRequest);
 
-    void notifyPendingApproval(User approver, LeaveRequest leaveRequest);
+    void notifyPendingApproval(LeaveRequest leaveRequest);
 
     void notifyLeaveStatusChanged(User user, LeaveRequest leaveRequest, String status);
 }

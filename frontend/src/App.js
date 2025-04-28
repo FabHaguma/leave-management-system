@@ -1,18 +1,18 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import LoginPage from './components/LoginPage';
-import Dashboard from './components/Dashboard';
-import LeaveApplication from './components/LeaveApplication';
-import LeaveHistory from './components/LeaveHistory';
-import LeaveBalance from './components/LeaveBalance';
-import ApplicationStatus from './components/ApplicationStatus';
-import CalendarManager from './components/CalendarManager';
-import LeavePolicies from './components/LeavePolicies';
-import BalanceAdjuster from './components/BalanceAdjuster';
-import ReportGenerator from './components/ReportGenerator';
-import NotificationCenter from './components/NotificationCenter';
-import ManageUsers from './components/ManageUsers';
+import LoginPage from './pages/LoginPage';
+import Dashboard from './pages/Dashboard';
+import LeaveApplication from './pages/LeaveApplication';
+import LeaveHistory from './pages/LeaveHistory';
+import LeaveBalance from './pages/LeaveBalance';
+import ApplicationStatus from './pages/ApplicationStatus';
+import CalendarManager from './pages/CalendarManager';
+import LeavePolicies from './pages/LeavePolicies';
+import BalanceAdjuster from './pages/BalanceAdjuster';
+import ReportGenerator from './pages/ReportGenerator';
+import NotificationCenter from './pages/NotificationCenter';
+import ManageUsers from './pages/ManageUsers';
 
 const App = () => {
   return (
